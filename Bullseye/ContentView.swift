@@ -59,49 +59,6 @@ struct ContentView: View {
     }
     
     
-    func startOver() {
-        score = 0
-        round = 1
-        sliderValue = 50.0
-        target = Int.random(in: 1...100)
-    }
-    
-    func pointsForCurrentGuess() -> Int {
-        let maxPoints = 100
-        let diff = amountOff()
-        let bonus: Int
-        if diff == 0 {
-            bonus = 100
-        } else if diff == 1 {
-            bonus = 50
-        } else {
-            bonus = 0
-        }
-        return maxPoints - diff + bonus
-    }
-    
-    func sliderValueRounded() -> Int {
-        return Int(sliderValue.rounded())
-    }
-    
-    func amountOff() -> Int {
-        return abs(target - sliderValueRounded())
-    }
-    
-    func alertTitle() -> String {
-        let diff = amountOff()
-        let title: String
-        if diff == 0 {
-            title = "You're spot on!"
-        } else if diff < 5 {
-            title = "Pretty close!"
-        } else if diff <= 10 {
-            title = "You're getting warmer!"
-        } else {
-            title = "Way off!"
-        }
-        return title
-    }
     
     var body: some View {
         
@@ -126,7 +83,6 @@ struct ContentView: View {
                 // Button row
                 
                 Button (action: {
-                    print("Button clicked!")
                     alterIsVisible = true
                     score = score + pointsForCurrentGuess()
                 }, label: {
@@ -177,6 +133,49 @@ struct ContentView: View {
             .toolbarBackground(navYellow.opacity(0.5), for: .navigationBar)
             .toolbarBackgroundVisibility(.visible, for: .navigationBar)
         }
+    }
+    func startOver() {
+        score = 0
+        round = 1
+        sliderValue = 50.0
+        target = Int.random(in: 1...100)
+    }
+    
+    func pointsForCurrentGuess() -> Int {
+        let maxPoints = 100
+        let diff = amountOff()
+        let bonus: Int
+        if diff == 0 {
+            bonus = 100
+        } else if diff == 1 {
+            bonus = 50
+        } else {
+            bonus = 0
+        }
+        return maxPoints - diff + bonus
+    }
+    
+    func sliderValueRounded() -> Int {
+        return Int(sliderValue.rounded())
+    }
+    
+    func amountOff() -> Int {
+        return abs(target - sliderValueRounded())
+    }
+    
+    func alertTitle() -> String {
+        let diff = amountOff()
+        let title: String
+        if diff == 0 {
+            title = "You're spot on!"
+        } else if diff < 5 {
+            title = "Pretty close!"
+        } else if diff <= 10 {
+            title = "You're getting warmer!"
+        } else {
+            title = "Way off!"
+        }
+        return title
     }
 }
 
