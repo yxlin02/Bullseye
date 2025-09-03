@@ -10,37 +10,58 @@ import SwiftUI
 struct ContentView: View {
     
     @State var alterIsVisible: Bool = false
-    @State var knockIsVisible: Bool = false
+    @State var sliderValue: Double = 50.0
     
     var body: some View {
         
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
+            // Target row
+            Spacer()
+            HStack {
+                Text("Put the bullseye as close as you can to:")
+                Text("100")
+            }
+            Spacer()
             
-            Text("Welcome to my first app")
+            // Slider row
+            HStack{
+                Text("1")
+                Slider(value: self.$sliderValue, in: 1...100 )
+                Text("100")
+            }
+            Spacer()
             
+            // Button row
             Button("Hit me!") {
                 print("Button clicked!")
                 self.alterIsVisible = true
             }
             .alert(isPresented: $alterIsVisible){ () ->
                 Alert in
+                var roundedValue: Int = Int(self.sliderValue.rounded())
                 return Alert(title: Text("Hello there!"),
-                             message: Text("This is my first pop-up."),
+                             message: Text("The slider's value is \(roundedValue)."),
                              dismissButton: .default(Text("Awesome!")))
             }
-            Button("Knock knock!") {
-                print("Knocked")
-                self.knockIsVisible = true
+            Spacer()
+            
+            // Score row
+            HStack{
+                Button("Start Over") {
+                   
+                }
+                Spacer()
+                Text("Score:")
+                Text("999")
+                Spacer()
+                Text("Round:")
+                Text("999")
+                Spacer()
+                Button("Info") {
+                   
+                }
             }
-            .alert(isPresented: $knockIsVisible){ () ->
-                Alert in
-                return Alert(title: Text("Hello there!"),
-                             message: Text("It's me, Mario!"),
-                             dismissButton: .default(Text("Awesome!")))
-            }
+            .padding(.bottom, 20)
         }
         .padding()
     }
