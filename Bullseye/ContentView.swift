@@ -14,6 +14,8 @@ struct ContentView: View {
     @State var target = Int.random(in: 1...100)
     @State var score = 0
     @State var round = 1
+    let midnightBlue = Color(red: 0.0/255.0, green: 51/255.0, blue: 102/255.0)
+    let navYellow = Color(red: 250/255.0, green: 127/255.0, blue: 82/255.0)
     
     struct LabelStyle: ViewModifier {
         func body(content: Content) -> some View {
@@ -39,6 +41,23 @@ struct ContentView: View {
                 .shadow(color: Color.black, radius: 5, x: 2, y: 2)
         }
     }
+    
+    struct ButtonLargeTextStyle: ViewModifier {
+        func body(content: Content) -> some View {
+            return content
+                .foregroundColor(Color.black)
+                .font(Font.custom("Arial Rounded MT Bold", size: 18))
+        }
+    }
+    
+    struct ButtonSmallTextStyle: ViewModifier {
+        func body(content: Content) -> some View {
+            return content
+                .foregroundColor(Color.black)
+                .font(Font.custom("Arial Rounded MT Bold", size: 12))
+        }
+    }
+    
     
     func startOver() {
         score = 0
@@ -86,60 +105,78 @@ struct ContentView: View {
     
     var body: some View {
         
-        VStack {
-            // Target row
-            Spacer()
-            HStack {
-                Text("Put the bullseye as close as you can to:").modifier(LabelStyle())
-                Text("\(target)").modifier(ValueStyle())
-            }
-            Spacer()
-            
-            // Slider row
-            HStack{
-                Text("1").modifier(LabelStyle())
-                Slider(value: $sliderValue, in: 1...100 )
-                Text("100").modifier(LabelStyle())
-            }
-            Spacer()
-            
-            // Button row
-            Button("Hit me!") {
-                print("Button clicked!")
-                alterIsVisible = true
-                score = score + pointsForCurrentGuess()
-            }
-            .alert(isPresented: $alterIsVisible){ () ->
-                Alert in
-                return Alert(title: Text(alertTitle()),
-                             message: Text("The slider's value is \(sliderValueRounded()).\n" + "Your score is \(pointsForCurrentGuess()) for this round."),
-                             dismissButton: .default(Text("Awesome!")) {
-                    target = Int.random(in: 1...100)
-                    round += 1
+        NavigationStack {
+            VStack {
+                // Target row
+                Spacer()
+                HStack {
+                    Text("Put the bullseye as close as you can to:").modifier(LabelStyle())
+                    Text("\(target)").modifier(ValueStyle())
+                }
+                Spacer()
+                
+                // Slider row
+                HStack{
+                    Text("1").modifier(LabelStyle())
+                    Slider(value: $sliderValue, in: 1...100 ).accentColor(Color.green)
+                    Text("100").modifier(LabelStyle())
+                }
+                Spacer()
+                
+                // Button row
+                
+                Button (action: {
+                    print("Button clicked!")
+                    alterIsVisible = true
+                    score = score + pointsForCurrentGuess()
+                }, label: {
+                    Text("Hit Me!").modifier(ButtonLargeTextStyle())
                 })
-            }
-            Spacer()
-            
-            // Score row
-            HStack{
-                Button("Start Over") {
-                    self.startOver()
+                .alert(isPresented: $alterIsVisible){ () ->
+                    Alert in
+                    return Alert(title: Text(alertTitle()),
+                                 message: Text("The slider's value is \(sliderValueRounded()).\n" + "Your score is \(pointsForCurrentGuess()) for this round."),
+                                 dismissButton: .default(Text("Awesome!")) {
+                        target = Int.random(in: 1...100)
+                        round += 1
+                    })
                 }
+                .background(Image("Button")).modifier(Shadow())
                 Spacer()
-                Text("Score:").modifier(LabelStyle())
-                Text("\(score)").modifier(ValueStyle())
-                Spacer()
-                Text("Round:").modifier(LabelStyle())
-                Text("\(round)").modifier(ValueStyle())
-                Spacer()
-                Button("Info") {
-                   
+                
+                // Score row
+                HStack{
+                    Button (action: {
+                        startOver()
+                    }, label: {
+                        HStack {
+                            Image("StartOverIcon")
+                            Text("Start Over").modifier(ButtonSmallTextStyle())
+                        }
+                    }).background(Image("Button")).modifier(Shadow())
+                    Spacer()
+                    Text("Score:").modifier(LabelStyle())
+                    Text("\(score)").modifier(ValueStyle())
+                    Spacer()
+                    Text("Round:").modifier(LabelStyle())
+                    Text("\(round)").modifier(ValueStyle())
+                    Spacer()
+                    NavigationLink(destination: AboutView(), label: {
+                        HStack {
+                            Image("InfoIcon")
+                            Text("Info").modifier(ButtonSmallTextStyle())
+                        }})
+                        .background(Image("Button")).modifier(Shadow())
                 }
+                .padding(.bottom, 20)
             }
-            .padding(.bottom, 20)
+            .padding()
+            .background(Image("Background"), alignment: .center)
+            .accentColor(midnightBlue)
+            .navigationTitle("Bullseye")
+            .toolbarBackground(navYellow.opacity(0.5), for: .navigationBar)
+            .toolbarBackgroundVisibility(.visible, for: .navigationBar)
         }
-        .padding()
-        .background(Image("Background"), alignment: .center)
     }
 }
 
