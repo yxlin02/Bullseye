@@ -9,8 +9,10 @@ import SwiftUI
 import FirebaseAuth
 
 struct AuthView: View {
+    // variables for login
     @State private var email = ""
     @State private var password = ""
+    // type of the messages
     @State private var errorMessage: String?
     @State private var successMessage: String?
 
@@ -54,11 +56,14 @@ struct AuthView: View {
 
     var body: some View {
         VStack(spacing: 20) {
+            
+            //title row
             Text("Welcome to Bullseye!")
                 .modifier(ValueStyle())
                 .foregroundColor(.white)
                 .padding(.bottom, 20)
 
+            // email input row
             TextField("Email", text: $email)
                 .padding()
                 .background(Color.white)
@@ -66,25 +71,29 @@ struct AuthView: View {
                 .keyboardType(.emailAddress)
                 .autocapitalization(.none)
                 .modifier(Shadow())
-
+            
+            //password input row
             SecureField("Password", text: $password)
                 .padding()
                 .background(Color.white)
                 .cornerRadius(fieldCornerRadius)
                 .modifier(Shadow())
 
-            if let errorMessage = errorMessage {
-                Text(errorMessage)
+            // display error or success messages
+            // leared this syntax through gemini.ai
+            if let displayErrorMessage = errorMessage {
+                Text(displayErrorMessage)
                     .foregroundColor(.red)
                     .font(Font.custom("Arial Rounded MT Bold", size: 14))
             }
 
-            if let successMessage = successMessage {
-                Text(successMessage)
+            if let displaySuccessMessage = successMessage {
+                Text(displaySuccessMessage)
                     .foregroundColor(.green)
                     .font(Font.custom("Arial Rounded MT Bold", size: 14))
             }
-
+            
+            // signup row
             Button(action: {
                 signUp()
             }) {
@@ -94,6 +103,7 @@ struct AuthView: View {
             .background(Image("Button"))
             .modifier(Shadow())
 
+            // sign in row
             Button(action: {
                 signIn()
             }) {
@@ -108,6 +118,7 @@ struct AuthView: View {
         .accentColor(midnightBlue)
     }
 
+    
     private func signUp() {
         Auth.auth().createUser(withEmail: email, password: password) { result, error in
             if let error = error {

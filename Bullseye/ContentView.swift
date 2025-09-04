@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 struct ContentView: View {
     
@@ -102,14 +103,23 @@ struct ContentView: View {
                 
                 // Score row
                 HStack{
-                    Button (action: {
-                        startOver()
-                    }, label: {
-                        HStack {
-                            Image("StartOverIcon")
-                            Text("Start Over").modifier(ButtonSmallTextStyle())
-                        }
-                    }).background(Image("Button")).modifier(Shadow())
+                    VStack(spacing: 25) {
+                        Button(action: {
+                            signOut()
+                        }, label: {
+                            Text("Log Out").modifier(ButtonSmallTextStyle())
+                        })
+                        .background(Image("Button")).modifier(Shadow())
+                        
+                        Button (action: {
+                            startOver()
+                        }, label: {
+                            HStack {
+                                Image("StartOverIcon")
+                                Text("Start Over").modifier(ButtonSmallTextStyle())
+                            }
+                        }).background(Image("Button")).modifier(Shadow())
+                    }
                     Spacer()
                     Text("Score:").modifier(LabelStyle())
                     Text("\(score)").modifier(ValueStyle())
@@ -117,12 +127,21 @@ struct ContentView: View {
                     Text("Round:").modifier(LabelStyle())
                     Text("\(round)").modifier(ValueStyle())
                     Spacer()
-                    NavigationLink(destination: AboutView(), label: {
-                        HStack {
-                            Image("InfoIcon")
-                            Text("Info").modifier(ButtonSmallTextStyle())
-                        }})
+                    VStack (spacing: 25){
+                        Button(action: {
+                            signOut()
+                        }, label: {
+                            Text("Log Out").modifier(ButtonSmallTextStyle())
+                        })
                         .background(Image("Button")).modifier(Shadow())
+                        
+                        NavigationLink(destination: AboutView(), label: {
+                            HStack {
+                                Image("InfoIcon")
+                                Text("Info").modifier(ButtonSmallTextStyle())
+                            }})
+                        .background(Image("Button")).modifier(Shadow())
+                    }
                 }
                 .padding(.bottom, 20)
             }
@@ -176,6 +195,15 @@ struct ContentView: View {
             title = "Way off!"
         }
         return title
+    }
+    
+    func signOut() {
+        do {
+            try Auth.auth().signOut()
+            print("User signed out successfully.")
+        } catch let signOutError as NSError {
+            print("Error signing out: %@", signOutError)
+        }
     }
 }
 
