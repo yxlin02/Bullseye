@@ -7,6 +7,7 @@
 
 import SwiftUI
 import FirebaseAuth
+import FirebaseFirestore
 
 struct ContentView: View {
     
@@ -96,6 +97,9 @@ struct ContentView: View {
                                  dismissButton: .default(Text("Awesome!")) {
                         target = Int.random(in: 1...100)
                         round += 1
+                        
+                        //submit the score to Firestore on a new round
+                        submitScore(currentScore: score)
                     })
                 }
                 .background(Image("Button")).modifier(Shadow())
@@ -104,10 +108,8 @@ struct ContentView: View {
                 // Score row
                 HStack{
                     VStack(spacing: 25) {
-                        Button(action: {
-                            signOut()
-                        }, label: {
-                            Text("Log Out").modifier(ButtonSmallTextStyle())
+                        NavigationLink(destination: LeaderBoardView(), label: {
+                            Text("Leaderboard").modifier(ButtonSmallTextStyle())
                         })
                         .background(Image("Button")).modifier(Shadow())
                         
@@ -203,6 +205,44 @@ struct ContentView: View {
             print("User signed out successfully.")
         } catch let signOutError as NSError {
             print("Error signing out: %@", signOutError)
+        }
+    }
+    
+    func submitScore(currentScore: Int){
+        //just to make sure user is signed in
+        guard let user = Auth.auth().currentUser else {
+                    print("No user is signed in.")
+                    return
+        }
+        
+        let db = Firestore.firestore()
+        let userDocRef = db.collection("highscores").document(user.uid)
+
+        // Use a transaction to ensure atomic read-write
+        db.runTransaction({ (transaction, errorPointer) -> Any? in
+            let userDocument: DocumentSnapshot
+            do {
+                userDocument = try transaction.getDocument(userDocRef)
+            } catch let fetchError as NSError {
+                errorPointer?.pointee = fetchError
+                return nil
+            }
+            
+            //get the existing high score, or set it to 0 if none exists
+            let existingScore = userDocument.data()?["score"] as? Int ?? 0
+
+            //if the current score is higher than the existing high score, update it
+            if currentScore > existingScore {
+                transaction.setData(["score": currentScore, "email": user.email ?? ""], forDocument: userDocRef)
+            }
+            
+            return nil
+        }) { (object, error) in // print result to console for debugging
+            if let error = error {
+                print("Transaction failed: \(error)")
+            } else {
+                print("Score updated successfully.")
+            }
         }
     }
 }
