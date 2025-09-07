@@ -108,10 +108,13 @@ struct ContentView: View {
                 // Score row
                 HStack{
                     VStack(spacing: 25) {
-                        NavigationLink(destination: LeaderBoardView(), label: {
-                            Text("Leaderboard").modifier(ButtonSmallTextStyle())
+                        Button(action: {
+                            signOut()
+                        }, label: {
+                            Text("Log Out").modifier(ButtonSmallTextStyle())
                         })
                         .background(Image("Button")).modifier(Shadow())
+                    
                         
                         Button (action: {
                             startOver()
@@ -130,10 +133,8 @@ struct ContentView: View {
                     Text("\(round)").modifier(ValueStyle())
                     Spacer()
                     VStack (spacing: 25){
-                        Button(action: {
-                            signOut()
-                        }, label: {
-                            Text("Log Out").modifier(ButtonSmallTextStyle())
+                        NavigationLink(destination: LeaderBoardView(), label: {
+                            Text("Leaderboard").modifier(ButtonSmallTextStyle())
                         })
                         .background(Image("Button")).modifier(Shadow())
                         
